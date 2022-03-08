@@ -35,12 +35,13 @@ class handler(BaseHTTPRequestHandler):
         res = calculate(content)
         print("send result\n")
         time.sleep(2)
-        print("calc result is :" + str(res))
-        res = json.dumps(res)
-        print(res)       
-        self.wfile.write(b"res")
+        var = {
+            "calc result is": res
+        }
+        # ------------- fix ----------------
+        self.send_response(bytes(json.dumps(var)))
 
 
-with HTTPServer(('', PORT), handler) as server:
+with HTTPServer(('',PORT), handler) as server:
     print("server listen on http://localhost:"+str(PORT))
     server.serve_forever()

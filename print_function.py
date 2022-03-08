@@ -1,3 +1,5 @@
+import json
+from itertools import islice
 
 # this page is for special print function
 list_names_tools = ["item name","status","inventory","inventory know","comments"]
@@ -6,18 +8,20 @@ list_names_events = ["location","date","time","descripton","nots","status","publ
 def print_board(bord_id,commend,client):
     if commend == "tools":
         list_ = list_names_tools.copy()
+        size = 8
+
     if commend == "events":
         list_ = list_names_events.copy()
+        size = 11
 
+    res = list()
     data_bord = get_data_from_bord_to_list(bord_id,client)
-    res = ""
-    for data in data_bord:
-        for sub_data in data:
-            print(type(sub_data),list(sub_data.split(":")))
-    # for data in data_bord:
-    #     for name in list_:
-    #          print( str(name) + ":" + str(data))
-    #     print()
+    res.append([data_bord[i:i+8] for i in range(0,len(data_bord),size)])
+    res = res[0]
+    for item in res:
+        for name,data in zip(list_,item):
+             print(str(name) + ":" + str(data[0]))
+        print()
 
 
 # function will fetch data from monday using monday api (see description bellow )
@@ -35,8 +39,11 @@ def get_data_from_bord_to_list(bord_id,client):
     # get the value of the fileds
     for item_object in item_list:
         for item_data in item_object:
-            id = item_data["id"]
-            text = item_data["text"]
-            res_list.append({id,text})
+            tup = (str(item_data["text"]),str(item_data["id"]))
+            res_list.append(tup)
     print(res_list)
-    return res_list
+    return res_list,len(item_list)
+
+#(Utility)# print json with indent
+def print_json(json_):
+    print(json.dumps(json_, indent=2, sort_keys=True))
